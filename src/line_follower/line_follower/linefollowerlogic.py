@@ -6,88 +6,97 @@ from cv_bridge import CvBridge
 import cv2
 import time
 
+
+
+def clamp(x, lo, hi):
+    return max(lo, min(x, hi))
+
+
 class PIDController:
+    def __init__(self, kp, ki=0.0, kd=0.0, max_output=1.5, max_integral=0.5):
+        self.kp, self.ki, self.kd = kp, ki, kd
+        self.max_output = max_output        # matches the real angular limit (rad/s)
+        self.max_integral = max_integral
+        self.last_output = 0.0
+        self.reset()
 
-    def __init__(self,kp,ki,kd):
-        self.kp=kp
-        self.ki=ki
-        self.kd=kd
+    def reset(self):
+        self.integral = 0.0
+        self.previous_error = 0.0
+        self.filtered_error = 0.0
+        self.initialized = False
 
-        self.previous_error=0
-        self.integral=0
-        self.was_line_lost=False
-        self.max_integral = 10
-        self.min_integral = -10
-        self.max_correction=100
-        self.min_correction=-100
-        self.filtered_error = 0
-        self.alpha = 0.2
-        self.initialized=False
-
-
-    def update(self,error,dt,line_detected=True):
-        if not(line_detected):
-            self.integral=0
-            self.previous_error=0
-            self.filtered_error = 0
-            self.was_line_lost=True
-            self.initialized=False
-            return 0
-
-        if(self.was_line_lost):
-            self.previous_error=error
-            self.was_line_lost=False
+    def update(self, error, dt, line_detected=True):
+        if not line_detected:
+            self.reset()
+            return 0.0
+        if dt <= 0:
+            return self.last_output
 
         if not self.initialized:
-            self.filtered_error=error
-            self.initialized=True
-
+            self.filtered_error = error
+            self.previous_error = error      # no derivative kick on first frame
+            self.initialized = True
         else:
-            self.filtered_error=self.alpha*error + (1- self.alpha)*self.filtered_error
+            # less smoothing when the error is large, so corners aren't lagged
+            alpha = 0.3 + 0.6 * min(abs(error), 1.0)
+            self.filtered_error = alpha * error + (1 - alpha) * self.filtered_error
 
-        error=self.filtered_error
+        e = self.filtered_error
+        P = self.kp * e
+        D = self.kd * (e - self.previous_error) / dt
 
-        if dt<=0:
-            return 0
-        P=self.kp*error
-        D=((error - self.previous_error)/dt)*self.kd
+        new_integral = clamp(self.integral + e * dt, -self.max_integral, self.max_integral)
+        raw = P + self.ki * new_integral + D
+        saturated = abs(raw) > self.max_output and raw * e > 0
+        if not saturated:                    # anti-windup
+            self.integral = new_integral
 
-        samp_integral=self.integral + error*dt
-        samp_integral=max(self.min_integral,min(samp_integral,self.max_integral))
-
-        samp_I=self.ki*samp_integral
-        samp_correction=P+D+samp_I
-
-        pushing_high=(samp_correction>self.max_correction and error>0)
-        pushing_low=(samp_correction<self.min_correction and error<0)
-
-        if not(pushing_high or pushing_low):
-            self.integral=samp_integral
-
-        I=self.ki*self.integral
-
-        self.previous_error=error
-        correction=P+I+D
-        output=max(self.min_correction,min(correction,self.max_correction))
-
-        return output
-
-    
-def calculate_motion(correction, base_speed=0.15,line_detected=True):
-        if not line_detected:
-            return 0.0, 0.0
-
-        max_angular_speed=1.5
-
-        angular_speed=max(-max_angular_speed,min(max_angular_speed,correction))
-
-        turn_ratio=abs(angular_speed)/max_angular_speed
-
-        linear_speed=base_speed*(1-0.5*turn_ratio)
-
-        return linear_speed,angular_speed
+        self.previous_error = e
+        out = clamp(P + self.ki * self.integral + D, -self.max_output, self.max_output)
+        self.last_output = out
+        return out
 
 
+class MotionPlanner:
+    FOLLOW, CREEP, SEARCH, STOPPED = range(4)
+
+    def __init__(self, base_speed=0.15, min_speed=0.04, max_ang=1.5,
+                 creep_speed=0.05, creep_distance=0.09,
+                 search_speed=1.2, search_timeout=6.0):
+        self.base_speed = base_speed
+        self.min_speed = min_speed
+        self.max_ang = max_ang
+        self.creep_speed = creep_speed
+        self.creep_time = creep_distance / creep_speed
+        self.search_speed = search_speed
+        self.search_timeout = search_timeout
+        self.state = self.FOLLOW
+        self.last_dir = 1.0                  # +1 = left, -1 = right
+        self.t0 = 0.0
+
+    def update(self, correction, error, line_detected, now):
+        if line_detected:
+            self.state = self.FOLLOW
+            if abs(error) > 0.1:             # remember which side the line was drifting to
+                self.last_dir = 1.0 if error > 0 else -1.0
+            w = clamp(correction, -self.max_ang, self.max_ang)
+            ratio = abs(w) / self.max_ang
+            v = max(self.min_speed, self.base_speed * (1 - 0.8 * ratio))
+            return v, w
+
+        # line lost: creep forward to the pivot point, then spin toward last side
+        if self.state == self.FOLLOW:
+            self.state, self.t0 = self.CREEP, now
+        if self.state == self.CREEP:
+            if now - self.t0 < self.creep_time:
+                return self.creep_speed, 0.0
+            self.state, self.t0 = self.SEARCH, now
+        if self.state == self.SEARCH:
+            if now - self.t0 < self.search_timeout:
+                return 0.0, self.last_dir * self.search_speed
+            self.state = self.STOPPED
+        return 0.0, 0.0
 class LineFollowerVision(Node):
     def __init__(self):
         super().__init__('line_follower_vision')

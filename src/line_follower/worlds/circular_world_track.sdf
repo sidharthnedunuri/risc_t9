@@ -1,6 +1,10 @@
 <?xml version="1.0" ?>
-<sdf version="1.9">
-  <world name="line_follower_world">
+<sdf version="1.8">
+  <world name="line_follower_triangle">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
     <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
     <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
     <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
@@ -13,12 +17,6 @@
       <pose>0 0 10 0 0 0</pose>
       <diffuse>0.8 0.8 0.8 1</diffuse>
       <specular>0.2 0.2 0.2 1</specular>
-      <attenuation>
-        <range>1000</range>
-        <constant>0.9</constant>
-        <linear>0.01</linear>
-        <quadratic>0.001</quadratic>
-      </attenuation>
       <direction>-0.5 0.1 -0.9</direction>
     </light>
 
@@ -26,92 +24,41 @@
       <static>true</static>
       <link name="link">
         <collision name="collision">
-          <geometry>
-            <plane>
-              <normal>0 0 1</normal>
-              <size>30 30</size>
-            </plane>
-          </geometry>
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
         </collision>
         <visual name="visual">
-          <geometry>
-            <plane>
-              <normal>0 0 1</normal>
-              <size>30 30</size>
-            </plane>
-          </geometry>
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
           <material>
-            <ambient>1.0 1.0 1.0 1</ambient>
-            <diffuse>1.0 1.0 1.0 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
 
-    <model name="black_line_s_loop">
+    <model name="triangle_track">
       <static>true</static>
       
-      <link name="line_1">
-        <pose>2.0 0.0 0.001 0 0 0</pose>
-        <visual name="v1">
-          <geometry><box><size>4.1 0.1 0.002</size></box></geometry>
-          <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
-        </visual>
-      </link>
-      
-      <link name="line_2">
-        <pose>4.0 2.0 0.001 0 0 1.570796</pose>
-        <visual name="v2">
-          <geometry><box><size>4.1 0.1 0.002</size></box></geometry>
+      <link name="side_1">
+        <pose>1.5 0 0.001 0 0 0</pose>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>3.2 0.1</size></plane></geometry>
           <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
         </visual>
       </link>
 
-      <link name="line_3">
-        <pose>2.0 4.0 0.001 0 0 0</pose>
-        <visual name="v3">
-          <geometry><box><size>4.1 0.1 0.002</size></box></geometry>
+      <link name="side_2">
+        <pose>2.25 1.299 0.001 0 0 2.0944</pose>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>3.2 0.1</size></plane></geometry>
           <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
         </visual>
       </link>
 
-      <link name="line_4">
-        <pose>0.0 6.0 0.001 0 0 1.570796</pose>
-        <visual name="v4">
-          <geometry><box><size>4.1 0.1 0.002</size></box></geometry>
-          <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
-        </visual>
-      </link>
-
-      <link name="line_5">
-        <pose>3.0 8.0 0.001 0 0 0</pose>
-        <visual name="v5">
-          <geometry><box><size>6.1 0.1 0.002</size></box></geometry>
-          <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
-        </visual>
-      </link>
-
-      <link name="line_6">
-        <pose>6.0 3.0 0.001 0 0 1.570796</pose>
-        <visual name="v6">
-          <geometry><box><size>10.1 0.1 0.002</size></box></geometry>
-          <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
-        </visual>
-      </link>
-
-      <link name="line_7">
-        <pose>3.0 -2.0 0.001 0 0 0</pose>
-        <visual name="v7">
-          <geometry><box><size>6.1 0.1 0.002</size></box></geometry>
-          <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
-        </visual>
-      </link>
-
-      <link name="line_8">
-        <pose>0.0 -1.0 0.001 0 0 1.570796</pose>
-        <visual name="v8">
-          <geometry><box><size>2.1 0.1 0.002</size></box></geometry>
+      <link name="side_3">
+        <pose>0.75 1.299 0.001 0 0 -2.0944</pose>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>3.2 0.1</size></plane></geometry>
           <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
         </visual>
       </link>
