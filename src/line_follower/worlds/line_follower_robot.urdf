@@ -1,33 +1,6 @@
 <?xml version="1.0"?>
 <robot name="line_follower_robot">
 
-  <!--
-    FRAME CONVENTION
-    base_link origin = centre of the wheel axle, 21.5 mm above ground.
-    +x = front (caster + camera), +y = left, +z = up.
-    Ground is at z = -0.0215 in base_link.
-
-    SIZE BUDGET (limit 150 x 150 mm)
-      length : plate 122 mm (x = -0.07 ... +0.052), camera overhangs to ~0.058
-      width  : wheel outer face to wheel outer face = 2 x 0.074 = 148 mm
-
-    Layer stack (z in base_link):
-      motors   -0.006  ... +0.006   (N20 gear motors, shaft on axle line z=0)
-      plate    +0.008  ... +0.011   (122 x 140 x 3 mm, front trimmed so the camera never sees the plate)
-      battery  +0.011  ... +0.031   (20 mm)
-      perfboard on battery, +0.031 ... +0.0326
-    Camera board top = +0.049, i.e. 38 mm above plate top (limit 40 mm).
-  -->
-
-  <material name="plate"><color rgba="0.10 0.35 0.15 1"/></material>
-  <material name="batt"><color rgba="0.20 0.20 0.65 1"/></material>
-  <material name="motor"><color rgba="0.95 0.80 0.10 1"/></material>
-  <material name="pcb"><color rgba="0.05 0.45 0.20 1"/></material>
-  <material name="tyre"><color rgba="0.08 0.08 0.08 1"/></material>
-  <material name="metal"><color rgba="0.70 0.70 0.70 1"/></material>
-  <material name="cam"><color rgba="0.05 0.05 0.05 1"/></material>
-
-  <!-- ================= CHASSIS (base_link) ================= -->
   <link name="base_link">
     <inertial>
       <origin xyz="-0.01 0 0.01" rpy="0 0 0"/>
@@ -35,57 +8,51 @@
       <inertia ixx="7.07e-4" ixy="0" ixz="0" iyy="7.07e-4" iyz="0" izz="1.307e-3"/>
     </inertial>
 
-    <!-- Main plate 140 x 140 x 3 mm -->
     <visual>
       <origin xyz="-0.009 0 0.0095" rpy="0 0 0"/>
       <geometry><box size="0.122 0.14 0.003"/></geometry>
-      <material name="plate"/>
+      <material name="plate"><color rgba="0.10 0.35 0.15 1"/></material>
     </visual>
     <collision>
       <origin xyz="-0.009 0 0.0095" rpy="0 0 0"/>
       <geometry><box size="0.122 0.14 0.003"/></geometry>
     </collision>
 
-    <!-- N20 gear motors: 10 (x) x 24 (y, along shaft) x 12 (z), under the plate, rear -->
     <visual>
       <origin xyz="-0.035 0.043 0" rpy="0 0 0"/>
       <geometry><box size="0.010 0.024 0.012"/></geometry>
-      <material name="motor"/>
+      <material name="motor"><color rgba="0.95 0.80 0.10 1"/></material>
     </visual>
     <visual>
       <origin xyz="-0.035 -0.043 0" rpy="0 0 0"/>
       <geometry><box size="0.010 0.024 0.012"/></geometry>
-      <material name="motor"/>
+      <material name="motor"><color rgba="0.95 0.80 0.10 1"/></material>
     </visual>
 
-    <!-- Battery 36 (x) x 66 (y) x 20 (z) -->
     <visual>
-      <origin xyz="-0.01 0 0.021" rpy="0 0 0"/>
+      <origin xyz="-0.025 0 0.021" rpy="0 0 0"/>
       <geometry><box size="0.036 0.066 0.020"/></geometry>
-      <material name="batt"/>
+      <material name="batt"><color rgba="0.20 0.20 0.65 1"/></material>
     </visual>
 
-    <!-- Perfboard 90 (x) x 70 (y) x 1.6 (z), resting on battery -->
     <visual>
-      <origin xyz="-0.01 0 0.0318" rpy="0 0 0"/>
+      <origin xyz="-0.025 0 0.0318" rpy="0 0 0"/>
       <geometry><box size="0.090 0.070 0.0016"/></geometry>
-      <material name="pcb"/>
+      <material name="pcb"><color rgba="0.05 0.45 0.20 1"/></material>
     </visual>
 
-    <!-- Camera stub (visual only): plate top 0.011 -> board bottom 0.0254 -->
     <visual>
-      <origin xyz="0.048 0 0.0188" rpy="0 0 0"/>
+      <origin xyz="0.020 0 0.0188" rpy="0 0 0"/>
       <geometry><box size="0.006 0.020 0.0157"/></geometry>
-      <material name="plate"/>
+      <material name="plate"><color rgba="0.10 0.35 0.15 1"/></material>
     </visual>
   </link>
 
-  <!-- ================= LEFT WHEEL (43 mm dia x 19 mm) ================= -->
   <link name="left_wheel">
     <visual>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <geometry><cylinder radius="0.0215" length="0.019"/></geometry>
-      <material name="tyre"/>
+      <material name="tyre"><color rgba="0.08 0.08 0.08 1"/></material>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
@@ -93,7 +60,6 @@
     </collision>
     <inertial>
       <mass value="0.02"/>
-      <!-- cylinder axis is y -->
       <inertia ixx="2.913e-6" ixy="0" ixz="0" iyy="4.62e-6" iyz="0" izz="2.913e-6"/>
     </inertial>
   </link>
@@ -105,12 +71,11 @@
     <axis xyz="0 1 0"/>
   </joint>
 
-  <!-- ================= RIGHT WHEEL ================= -->
   <link name="right_wheel">
     <visual>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <geometry><cylinder radius="0.0215" length="0.019"/></geometry>
-      <material name="tyre"/>
+      <material name="tyre"><color rgba="0.08 0.08 0.08 1"/></material>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
@@ -129,8 +94,6 @@
     <axis xyz="0 1 0"/>
   </joint>
 
-  <!-- ================= FRONT CASTER (under camera mast) ================= -->
-  <!-- Ball radius 10 mm, centre at z = -0.011 so it touches the ground (-0.0215) -->
   <link name="front_caster">
     <inertial>
       <mass value="0.01"/>
@@ -138,13 +101,12 @@
     </inertial>
     <visual>
       <geometry><sphere radius="0.01"/></geometry>
-      <material name="metal"/>
+      <material name="metal"><color rgba="0.70 0.70 0.70 1"/></material>
     </visual>
-    <!-- stem up to the plate underside (plate bottom is 0.019 above ball centre) -->
     <visual>
       <origin xyz="0 0 0.0095" rpy="0 0 0"/>
       <geometry><cylinder radius="0.003" length="0.019"/></geometry>
-      <material name="metal"/>
+      <material name="metal"><color rgba="0.70 0.70 0.70 1"/></material>
     </visual>
     <collision>
       <geometry><sphere radius="0.01"/></geometry>
@@ -157,12 +119,6 @@
     <origin xyz="0.04 0 -0.011" rpy="0 0 0"/>
   </joint>
 
-  <!-- ================= CAMERA (Arducam HM0360 board) ================= -->
-  <!-- Board: 6 mm thick (x) x 33.12 mm wide (y) x 23.05 mm high (z).
-       Pitched 0.75 rad (~43 deg) down, HFOV 1.57 rad (90 deg). Board top = 0.0477
-       in base_link, i.e. ~36.7 mm above plate top (limit 40 mm).
-       Lens centre is ~58 mm above ground.
-       Tuning: larger pitch = looks closer, smaller = looks further ahead. -->
   <link name="camera_link">
     <inertial>
       <mass value="0.005"/>
@@ -170,17 +126,16 @@
     </inertial>
     <visual>
       <geometry><box size="0.006 0.03312 0.02305"/></geometry>
-      <material name="cam"/>
+      <material name="cam"><color rgba="0.05 0.05 0.05 1"/></material>
     </visual>
   </link>
 
   <joint name="camera_joint" type="fixed">
     <parent link="base_link"/>
     <child link="camera_link"/>
-    <origin xyz="0.048 0 0.0372" rpy="0 0.75 0"/>
+    <origin xyz="0.028 0 0.0372" rpy="0 0.53 0"/>
   </joint>
 
-  <!-- ================= GAZEBO PLUGINS & CONFIG ================= -->
   <gazebo reference="left_wheel">
     <mu1>1.0</mu1>
     <mu2>1.0</mu2>

@@ -14,6 +14,8 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
         (os.path.join('share', package_name, 'worlds'), glob('worlds/*')),
+        # Optional: uncomment if you put your urdf in a dedicated urdf folder
+        # (os.path.join('share', package_name, 'urdf'), glob('urdf/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

@@ -1,10 +1,12 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
   <world name="line_follower_triangle">
+
     <physics name="1ms" type="ignored">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1.0</real_time_factor>
     </physics>
+
     <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
     <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
     <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
@@ -24,10 +26,20 @@
       <static>true</static>
       <link name="link">
         <collision name="collision">
-          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
         </collision>
         <visual name="visual">
-          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>20 20</size>
+            </plane>
+          </geometry>
           <material>
             <ambient>0.8 0.8 0.8 1</ambient>
             <diffuse>0.8 0.8 0.8 1</diffuse>
@@ -38,30 +50,58 @@
 
     <model name="triangle_track">
       <static>true</static>
-      
-      <link name="side_1">
-        <pose>1.5 0 0.001 0 0 0</pose>
-        <visual name="visual">
-          <geometry><plane><normal>0 0 1</normal><size>3.2 0.1</size></plane></geometry>
-          <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
-        </visual>
-      </link>
+      <link name="track">
 
-      <link name="side_2">
-        <pose>2.25 1.299 0.001 0 0 2.0944</pose>
-        <visual name="visual">
-          <geometry><plane><normal>0 0 1</normal><size>3.2 0.1</size></plane></geometry>
-          <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+        <visual name="side_1">
+          <geometry>
+            <polyline>
+              <point>-0.086603 -0.05</point>
+              <point>3.086603 -0.05</point>
+              <point>2.913397 0.05</point>
+              <point>0.086603 0.05</point>
+              <height>0.002</height>
+            </polyline>
+          </geometry>
+          <material>
+            <ambient>0 0 0 1</ambient>
+            <diffuse>0 0 0 1</diffuse>
+          </material>
         </visual>
-      </link>
 
-      <link name="side_3">
-        <pose>0.75 1.299 0.001 0 0 -2.0944</pose>
-        <visual name="visual">
-          <geometry><plane><normal>0 0 1</normal><size>3.2 0.1</size></plane></geometry>
-          <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+        <visual name="side_2">
+          <geometry>
+            <polyline>
+              <point>3.086603 -0.05</point>
+              <point>1.5 2.698076</point>
+              <point>1.5 2.498076</point>
+              <point>2.913397 0.05</point>
+              <height>0.002</height>
+            </polyline>
+          </geometry>
+          <material>
+            <ambient>0 0 0 1</ambient>
+            <diffuse>0 0 0 1</diffuse>
+          </material>
         </visual>
+
+        <visual name="side_3">
+          <geometry>
+            <polyline>
+              <point>1.5 2.698076</point>
+              <point>-0.086603 -0.05</point>
+              <point>0.086603 0.05</point>
+              <point>1.5 2.498076</point>
+              <height>0.002</height>
+            </polyline>
+          </geometry>
+          <material>
+            <ambient>0 0 0 1</ambient>
+            <diffuse>0 0 0 1</diffuse>
+          </material>
+        </visual>
+
       </link>
     </model>
+
   </world>
 </sdf>
