@@ -133,7 +133,7 @@
   <joint name="camera_joint" type="fixed">
     <parent link="base_link"/>
     <child link="camera_link"/>
-    <origin xyz="0.028 0 0.0372" rpy="0 0.53 0"/>
+    <origin xyz="0.028 0 0.0372" rpy="0 0.43 0"/>
   </joint>
 
   <gazebo reference="left_wheel">

@@ -5,18 +5,21 @@ from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
+def generate_line_follower_launch_description():
+    pass # placeholder for context
+
 def generate_launch_description():
     pkg_line_follower = get_package_share_directory('line_follower')
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
 
-    world_file = os.path.join(pkg_line_follower, 'worlds', 'circular_world_track.sdf')
-    # Updated to point to your final URDF filename inside the package/worlds or install directory
+    # Updated to use the hackathon grading world file
+    world_file = os.path.join(pkg_line_follower, 'worlds', 'final_grading.sdf')
     robot_file = os.path.join(pkg_line_follower, 'worlds', 'line_follower_robot.urdf')
 
-    # Set resource path so Gazebo finds your worlds and models
+    # Set resource path to the workspace src directory so Gazebo finds models cleanly
     set_gz_resource_path = SetEnvironmentVariable(
         name='GZ_SIM_RESOURCE_PATH',
-        value=os.path.join(pkg_line_follower, '..')
+        value='/home/sidharth/risc_t9/src'
     )
 
     # Launch Gazebo Sim with GUI enabled (-r runs it immediately)
